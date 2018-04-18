@@ -1,12 +1,12 @@
 ---
 title: "TensorFlow Architektur"
-author:	[Jan Hofmeier, Kristina	Albrecht]
+author:	[Jan Hofmeier, Kristina Albrecht]
 date: 2018-04-20
 subject: "TensorFlow"
 tags: [Hana, SSBM]
-subtitle: "Software	Architektur"
+subtitle: "Software Architektur"
 titlepage: true
-titlepage-color: 06386e
+titlepage-color: E0AB0D
 titlepage-text-color: FFFFFF
 titlepage-rule-color: FFFFFF
 titlepage-rule-height: 1
@@ -23,15 +23,14 @@ Trotz der erfolgreichen Nutzung hatte DistBelief einige Einschränkungen:
 
 - die NN-Schichten mussten (im Gegensatz zum genutzten Python-Interface) aus Effizienz-Gründen mit C++ definiert werden. 
 - die Gradientenfunktion zur Minimierung des Fehlers erforderte eine Anpassung der Implementierung des integrierten Parameter-Servers. 
-- Algorithmen können konstruktionsbedingt lediglich für vorwärtsgerichtete
+- nur vorwärtsgerichtete Algorithmen möglich rekurrente KNN oder Reinforcement Learning möglich.
+- wurde für die Anwendung auf großen Clustern von Multi-Core-CPU-Servern, keine Unterstützung von GPUs oder anderen Prozessoren. 
 
-KNN entwickelt werden - das Training von Modellen für rekurrente KNN oder
-verstärkendes Lernen ist nicht möglich. Zudem wurde DistBelief für die Anwendung auf
-großen Clustern von Multi-Core-CPU-Servern entwickelt und unterstützte den Betrieb auf
-verteilten GPU-Systemen nicht. Ein ’herunterskalieren’ auf andere Umgebungen erweist
-sich daher als schwierig
+Diese Einschränkungen wurden bei der Entwicklung von TensorFlow berücksichtigt und behoben. Interessant ist, dass DistBelief zwar als Prototyp für TensorFlow genommen wurde, an dem verschiedene Funktionalitäten ausprobiert und getestet wurden, allerdings wurde TensorFlow komplett neu entwicklelt. Das ist ein Beispiel dafür, dass Prototype sehr praktisch sind, dass es jedoch auch wichtig ist, deren Vor- und Nachteile zu bewerten und im Laufe der Entwicklung Prototype zu verwerfen.
 
-  These	applications are implemented using graphs to organize the flow of operations and tensors for representing the data.	It offers an application programming interface (API) in	Python,	as well	as a lower level set of	functions implemented using	C++. It	provides a set of features to enable faster	prototyping	and	implementation of machine learning models and applications for highly heterogeneous	computing platforms.
+
+
+Im Weiteren werden die Anforderungen verschiedener Benutzergruppen beschrieben und die Architektur der Bibliothek ausführlich erläutert.
 
 ## Stakeholders
 
