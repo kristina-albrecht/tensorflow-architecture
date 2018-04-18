@@ -32,52 +32,84 @@ Diese Einschränkungen wurden bei der Entwicklung von TensorFlow berücksichtigt
 
 Im Weiteren werden die Anforderungen verschiedener Benutzergruppen beschrieben und die Architektur der Bibliothek ausführlich erläutert.
 
-## Stakeholders
+## Anforderungsanalyse
+
+TensorFlow wird von verschiedenen **Benutzergruppen** verwendet:
 
 - Forscher, Studenten, Wissenschaftler
 - Architekten und Software Engineure
 - Entwickler
-- Hardware Hersteller
+- Hardware Hersteller.
 
-## Anforderungen (Funktionale / Nicht-Funktionale)
+Die Bibliothek wird vor allem zur Entwicklung der Anwendungen mit AI-Funktionalitäten eingesetzt. Zusätzlich wir sie zur Forschungszwecken im Bereich Machine Learning zur Entwicklung der neuen Algorithmen und Modelle verwendet. Außerdem gehören auch Hardware-Hersteller zu einer der Benutzergruppen von TensorFlow, die ihre Produkte (zB. CPUs, GPUs etc.) für Machine Learning-Zwecke optimieren wollen. 
 
-- ML und DL	Funktionalitäten: Schnelle Rechenoperationen, Matrizen,	Lineare	Algebra	und	Statistik
-	 Flexibilität:	Forschung, Prototypen und Produktion
-	--TensorFlow™ allows industrial researchers a faster product prototyping. It also provides	academic researchers with a	development	framework and a	community to discuss and support novel applications.
-	--Provides	tools to assemble graphs for expressing	diverse	machine	learning models. New operations	can	be written in Python and low-level data	operators are implemented using	in C++.
-	 Performance: maximale	Effizienz und schnelle Berechnungen. 
+Aus diesen Anwendungsfällen lassen sich die **Anforderungen** an die Bibliothek ableiten:
 
-- Portabilität
-	--Runs	on CPUs, GPUs, desktop,	server,	or mobile computing	platforms. That	make it	very suitable in several fields	of application,	for	instance medical, finance, consumer	electronic,	etc.
+- **ML und DL Funktionalitäten:** Da Machine Learning einiges an mathematischen Berechnungen erfordert, soll TensorFlow vor allem für Vektor- bzw Matrizen-Operationen und andere Rechenoperationen aus Linearen Algebra und Statistik optimiert sein;
+
+- **Vielfältige Einsatzmöglichkeit:** Die Bibliothek soll sowohl für eine schnelle Entwicklung der Prototypen als auch für den produktiven Einsatz geeignet sein;
+
+- **Performance:** Da das Training vieler Modelle rechenintensiv ist und einige Zeit in Anspruch nimmt, soll TensorFlow die Berechnungen effizient umsetzen;
+
+- **Flexibilität:** Die Bibliothel soll die Möglichkeit bieten, ML-Modelle schnell zu entwickeln, aber auch Anpassungen durchzuführen und neue Algorithmen und Modelle zu entwickeln;
+
+- **Skalierbarkeit:** Große Datenmengen und rechenintensive Operationen;
+
+- **Portabilität:** Die Bibliothek soll auf verschiedenen Systemen laufen;
+
+   ​
+
+   Portabilität => Device Layer, Kernel implementations
+
+   Skalierbarkeit => verteilt, mehrere Worker (Distributed Master, Dataflow Executor, Worker Services)
+
+   Perfomence => C++ Client, Kernel implementations
+
+   --Runs on CPUs, GPUs, desktop, server,	or mobile computing	platforms. That	make it	very suitable in several fields	of application, for	instance medical, finance, consumer	electronic,	etc.
+
+   Flexibilität:	 => High & Low Level APIs
+
+   Vielfältige Einsatzmöglichkeit: Forschung, Prototypen und Produktion  => Python Client, High Level Libraries
+   --TensorFlow™ allows industrial researchers a faster product prototyping. It also provides	academic researchers with a	development	framework and a	community to discuss and support novel applications.
+
+   --Provides tools to assemble graphs for expressing	diverse	machine	learning models. New perations	can	be written in Python and low-level data	operators are implemented using	in C++.
+   Portabilität
+
+   ​
+
+   ​
 
 ## Anforderungsanalyse
 
-|      |      |      |      |
-| ---- | ---- | ---- | ---- |
-|      |      |      |      |
-|      |      |      |      |
-|      |      |      |      |
-|      |      |      |      |
-|      |      |      |      |
-|      |      |      |      |
-|      |      |      |      |
-|      |      |      |      |
-|      |      |      |      |
+| Faktor-Index | Beschreibung                                                 | Flexibilität | Einfluss |
+| ------------ | ------------------------------------------------------------ | ------------ | -------- |
+| O1           | Interessen der Benutzergruppen müssen berücksichtigt werden  | Fest         | mittel   |
+| O2           | Schnelle Auslieferungen von neuen Features (u.U. eingeschränkte Kapazitäten) | Flexibel     | mittel   |
+| P1           | ML und DL Funktionalitäten                                   | Fest         | stark    |
+| P2           | Schnelle Erstellung von Prototypen                           | Fest         | stark    |
+| P3           | Erstellung produktiv einsetzbarer Modelle                    | Fest         | stark    |
+| P4           | Anpassungen und Entwicklung neuer Modelle                    | Fest         | stark    |
+| T1           | Schnelle Performance                                         | Fest         | stark    |
+| T2           | Große Datenvolumen und rechenintensive Operationen           | Fest         | stark    |
+| T3           | Portabilität ( soll auf verschiedenen Systemen  wie Desktop, Server, Mobile Geräte etc. ausführbar sein) | Fest         | stark    |
+| T4           | Stabilität und Fehlertoleranz                                | Fest         | stark    |
+| T5           | Erweiterbarkeit                                              | Fest         | stark    |
 
 
 
 ## Architekturentwurf
 
+Im Weiteren werden 4 Sichten der TensorFlow-Architektur dargestellt: Kontext-Sicht, Entwurfssicht (Development View), Ablaufssicht (Process View) und Physikalische Sicht (Deployment View).
+
 ### Kontext-Sicht
 
 ![Dependencies](img/Contextview.png){height=400px}
 
-## Source-Code-Hierarchie
---TensorFlow™ 's root directory	at GitHub is organized in five main	subdirectories:	google,	tensorflow,	third-party, tools and util/python.	Additionally, the root directory provides information on how to	contribute to the project, and other relevant documents. In	figure 3, the source code hierarchy	is illustrated.
 
-![Source-Code-Hierarchie](img/TensorFlowTree.png){height=400px}
 
-###	Development-Sicht
+###Verhaltenssicht (Architekturbausteine)
+
+![](./img/ComponentView.png)
 
 
 
@@ -99,5 +131,20 @@ Kernels
 
 
 
-###	Deployment-Sicht
+### 
 
+###Struktursicht
+
+![](img/Structure.png)
+
+###Source-Code-Hierarchie
+
+--TensorFlow™ 's root directory	at GitHub is organized in five main	subdirectories: google, tensorflow, third-party, tools and util/python. Additionally, the root directory provides information on how to contribute to the project, and other relevant documents. In figure 3, the source code hierarchy is illustrated.
+
+![Source-Code-Hierarchie](img/TensorFlowTree.png){height=400px}
+
+
+
+###	Abblidungssicht (Ausführungseinheiten)
+
+![](./img/Deployment.png)
