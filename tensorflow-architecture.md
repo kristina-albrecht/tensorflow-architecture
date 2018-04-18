@@ -1,23 +1,36 @@
 ---
 title: "TensorFlow Architektur"
+
 author:	[Jan Hofmeier, Kristina Albrecht]
+
 date: 2018-04-20
+
 subject: "TensorFlow"
+
 tags: [Hana, SSBM]
+
 subtitle: "Software Architektur"
+
 titlepage: true
+
 titlepage-color: E0AB0D
+
 titlepage-text-color: FFFFFF
+
 titlepage-rule-color: FFFFFF
+
 titlepage-rule-height: 1
-...
+
+bibliography: TendorFlow.bib
+biblio-title: Literatur
+---
 
 # TensorFlow-Architektur
 
 ## Was ist TensorFlow
 TensorFlow ist eine Machine Learning Bibliothek, welche 2015 von Google als  Open-Source veröffentlicht wurde. Der Schwerpunkt der Bibliothek liegt auf neuronalen Netzen und tiefen neuronalen Netzen, die in der letzen Zeit eine umfangreiche Anwendung in vielen Bereichen der künstlichen Intelligenz wie Bilderkennung und Spracheanalyse gefunden haben. 
 
-TensorFlow wurde als Nachfolger einer anderen Bibliothek für Machine Learning, **DistBelief**, entwickelt. DistBelief wurde im Rahmen des Google Brain Projekts im Jahr 2011 entwickelt, um die Nutzung von hochskalierbaren tiefen neuronalen Netzen (DNN) zu erforschen. Die Bibliothek wurde unter anderem für unsupervised Lernen, Bild- und Spracherkennung und auch bei der Evaluation von Spielzügen im Brettspiel Go eingesetzt.
+TensorFlow wurde als Nachfolger einer anderen Bibliothek für Machine Learning, **DistBelief**, entwickelt. DistBelief wurde im Rahmen des Google Brain Projekts im Jahr 2011 entwickelt, um die Nutzung von hochskalierbaren tiefen neuronalen Netzen (DNN) zu erforschen. Die Bibliothek wurde unter anderem für unsupervised Lernen, Bild- und Spracherkennung und auch bei der Evaluation von Spielzügen im Brettspiel Go eingesetzt.[@TensorFlow2018]
 
 Trotz der erfolgreichen Nutzung hatte DistBelief einige Einschränkungen:
 
