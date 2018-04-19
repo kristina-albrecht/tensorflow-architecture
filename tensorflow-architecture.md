@@ -91,19 +91,15 @@ Portabilität
 
 ### Einflussfaktoren
 
-| Faktor-Index | Beschreibung                                                 | Flexibilität | Einfluss |
-| ------------ | ------------------------------------------------------------ | ------------ | -------- |
-| O1           | Interessen der Benutzergruppen müssen berücksichtigt werden  | Fest         | mittel   |
-| O2           | Schnelle Auslieferungen von neuen Features (u.U. eingeschränkte Kapazitäten) | Flexibel     | mittel   |
-| P1           | ML und DL Funktionalitäten                                   | Fest         | stark    |
-| P2           | Schnelle Erstellung von Prototypen                           | Fest         | stark    |
-| P3           | Erstellung produktiv einsetzbarer Modelle                    | Fest         | stark    |
-| P4           | Anpassungen und Entwicklung neuer Modelle                    | Fest         | stark    |
-| T1           | Schnelle Performance                                         | Fest         | stark    |
-| T2           | Große Datenvolumen und rechenintensive Operationen           | Fest         | stark    |
-| T3           | Portabilität ( soll auf verschiedenen Systemen  wie Desktop, Server, Mobile Geräte etc. ausführbar sein) | Fest         | stark    |
-| T4           | Stabilität und Fehlertoleranz                                | Fest         | stark    |
-| T5           | Erweiterbarkeit                                              | Fest         | stark    |
+| Faktor-Index | Beschreibung                                                 |
+| ------------ | ------------------------------------------------------------ |
+| O1           | Community, welche verwendet und Contributions macht          |
+| O2           | Entwickler und interne Nutzer haben Kenntnisse in C++und Python |
+| T1           | Es werden neue Acceleratoren entwickelt                      |
+| T2           | Die Rechenleistung einer Maschine ist begrenzt, weshalb horizontal skaliert werden muss |
+| T3           | Auf Clustern und im Produktiven Einsatz kommt vor allem Linux zum Einsatz, die User verwenden oft OS  X oder Windows. Es muss aber auch auf noch unbekannten Betriebsystem einsetzbar sein. |
+|              | Neue Bibliotheken integrieren                                |
+|              |                                                              |
 
 
 
