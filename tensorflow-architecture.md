@@ -99,7 +99,8 @@ Portabilität
 | T2           | Die Rechenleistung einer Maschine ist begrenzt, weshalb horizontal skaliert werden muss |
 | T3           | Auf Clustern und im Produktiven Einsatz kommt vor allem Linux zum Einsatz, die User verwenden oft OS  X oder Windows. Es muss aber auch auf noch unbekannten Betriebsystem einsetzbar sein. |
 |              | Neue Bibliotheken integrieren                                |
-|              |                                                              |
+| P1           | System kann abstürzen                                        |
+| P2           | Modell kann sehr komplex werden und viele Daten involvieren  |
 
 
 
