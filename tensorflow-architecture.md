@@ -127,18 +127,24 @@ Im Weiteren werden 4 Sichten der TensorFlow-Architektur dargestellt: Kontext-Sic
 
 ###Struktursicht
 
-Tensorflow ist in mehren Schichten Organisiert. Diese reichen von einer Gerätespezifischen Schicht (unten) bis zu High Level Training und Inference Bibliotheken (oben). Diese Schichtenarchitektur erlaubt ein hohes Maß and Flexibilität und Portabilität.
+Tensorflow ist in mehren Schichten Organisiert. Diese reichen von einer Gerätespezifischen Schicht (unten) bis zu High Level Training und Inference Bibliotheken (oben). Der Tensorflow Core stellt seine Funktionalität über eine Low-Level C API bereit. Diese Low-Level API wird durch High-Level APIs für verschiedene Client Sprachen, wie Python, C++, Java und Go gekpaselt. Unter Verwendung der Sprachspezifischen APIs gibt es High-Level Bibliotheken für Training und Inference. 
+
+Diese Schichtenarchitektur erlaubt ein hohes Maß and Flexibilität und Portabilität. So kann auf dem Device Layer beispielsweise Unterstützung für Acceleratoren wie GPUs und TPUs hinzugefügt werden, Kernelimplementationen hinzugefügt oder ersetzt werden und eine zusätztliche Schnittstelle für eine andere Sprache hinzugefügt werden.
+
+High Level Python Bibliotheken erlauben das schnelle prototyping und Training von Modellen und Algorithmen. Die C++  und Java Clients dagegen untersützt das einbinden trainierter Modelle in Produktivsysteme, auf welchen hohe Inference Performance gefordert ist.
+
+Der Distribution master ist dafür verantwortlich die Berechnungen auf mehre Dataflow Executer aufzuteilen. Dabei werden transparent Send und Recive Nodes an den Kanten eingefügt, an denen der Graph partitioniert wird. Die Dataflow Executer können dabei auf mehre Madschienen verteilt werden, die passende Kommunikation wird vom Network Layer abstrahiert.
 
 
 
 ![](C:/Users/IBM_ADMIN/Documents/DHBW/tensorflow-architecture/img/ComponentView.png)
 
-Der Tensorflow Core stellt seine Funktionalität über eine Low-Level C API bereit. Diese Low-Level API wird durch High-Level APIs für verschiedene Client Sprachen, wie Python, C++, Java und Go gekpaselt. Unter Verwendung der Sprachspezifischen APIs gibt es High-Level Bibliotheken für Training und Inference. 
+
 
 #### Kernels
 
-- Kernels sind Implementierungen von Operationen, die speziell für die Ausführung auf einer bestimmten Recheneinheit wie CPU oder GPU entwickelt wurden.
-- Die TensorFlow-Bibliothek enthält mehrere solche eingebaute Operationen/Kernels. Beispiele dafür sind:
+- Kernels sind C++ Implementierungen von Operationen, die speziell für die Ausführung auf einer bestimmten Recheneinheit wie CPU oder GPU entwickelt wurden. Da sie zu nativiem Maschinencode kompiliert werden und sehr Hardware nah geschrieben sind, können sie diese optimal ausnutzten und sehr hohe Performance erzielen.  
+- Die TensorFlow enthält mehrere solche eingebaute Operationen/Kernels. Beispiele dafür sind: 
 
 | Kategorie                               | Beispiele                                            |
 | --------------------------------------- | ---------------------------------------------------- |
@@ -150,6 +156,10 @@ Der Tensorflow Core stellt seine Funktionalität über eine Low-Level C API bere
 | Checkpoint-Operations                   | Save, Restore                                        |
 | Queue und Synchronisations- operationen | Enqueue, Dequeue, MutexAcquire, MutexRelease         |
 | Flusskontroll-Operationen               | Merge, Switch, Enter, Leave, NextIteration           |
+
+- TensorFlow untersützt das einbinden eigener Kernel.
+
+
 
 
 
