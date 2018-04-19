@@ -32,14 +32,14 @@ TensorFlow ist eine Machine Learning Bibliothek, welche 2015 von Google als  Ope
 
 TensorFlow wurde als Nachfolger einer anderen Bibliothek für Machine Learning, **DistBelief**, entwickelt. DistBelief wurde im Rahmen des Google Brain Projekts im Jahr 2011 entwickelt, um die Nutzung von hochskalierbaren tiefen neuronalen Netzen (DNN) zu erforschen. Die Bibliothek wurde unter anderem für unsupervised Lernen, Bild- und Spracherkennung und auch bei der Evaluation von Spielzügen im Brettspiel Go eingesetzt.[@TensorFlow2018]
 
-Trotz der erfolgreichen Nutzung hatte DistBelief einige Einschränkungen:
+Trotz des erfolgreichen Einsatzes hatte DistBelief einige Einschränkungen:
 
-- die NN-Schichten mussten (im Gegensatz zum genutzten Python-Interface) aus Effizienz-Gründen mit C++ definiert werden. 
+- die NN-Schichten mussten (im Gegensatz zum genutzten Python-Interface) aus Effizienz-Gründen mit C++ definiert werden. <!-- Nur die NN Schichten oder die Modelle allgemein? -->
 - die Gradientenfunktion zur Minimierung des Fehlers erforderte eine Anpassung der Implementierung des integrierten Parameter-Servers. 
 - nur vorwärtsgerichtete Algorithmen möglich rekurrente KNN oder Reinforcement Learning möglich.
-- wurde für die Anwendung auf großen Clustern von Multi-Core-CPU-Servern, keine Unterstützung von GPUs oder anderen Prozessoren. 
+- wurde nurfür die Anwendung auf großen Clustern von Multi-Core-CPU-Servern entwickelt, keine Unterstützung von GPUs oder anderen Prozessoren.
 
-Diese Einschränkungen wurden bei der Entwicklung von TensorFlow berücksichtigt und behoben. Interessant ist, dass DistBelief zwar als Prototyp für TensorFlow genommen wurde, an dem verschiedene Funktionalitäten ausprobiert und getestet wurden, allerdings wurde TensorFlow komplett neu entwicklelt. Das ist ein Beispiel dafür, dass Prototype sehr praktisch sind, dass es jedoch auch wichtig ist, deren Vor- und Nachteile zu bewerten und im Laufe der Entwicklung Prototype zu verwerfen.
+Aus den Erfahrungen mit DistBelief wurde gelernt und diese Erfahrungen wurden bei der Entwicklung von TensorFlow berücksichtigt. Interessant ist, dass DistBelief zwar als Prototyp für TensorFlow genommen wurde, an dem verschiedene Funktionalitäten ausprobiert und getestet wurden, allerdings wurde TensorFlow komplett neu entwicklelt. Das ist ein Beispiel dafür, dass Prototype sehr praktisch sind, dass es jedoch auch wichtig ist, deren Vor- und Nachteile zu bewerten und im Laufe der Entwicklung Prototype auch zu verwerfen.
 
 
 
@@ -51,20 +51,22 @@ TensorFlow wird von verschiedenen **Benutzergruppen** verwendet:
 
 - Forscher, Studenten, Wissenschaftler
 - Architekten und Software Engineure
-- Entwickler
-- Hardware Hersteller.
+- Software Entwickler
+- Hardware Hersteller. <!-- Stakeholder -->
 
 Die Bibliothek wird vor allem zur Entwicklung der Anwendungen mit AI-Funktionalitäten eingesetzt. Zusätzlich wir sie zur Forschungszwecken im Bereich Machine Learning zur Entwicklung der neuen Algorithmen und Modelle verwendet. Außerdem gehören auch Hardware-Hersteller zu einer der Benutzergruppen von TensorFlow, die ihre Produkte (zB. CPUs, GPUs etc.) für Machine Learning-Zwecke optimieren wollen. 
 
 Aus diesen Anwendungsfällen lassen sich die **Anforderungen** an die Bibliothek ableiten:
 
-- **ML und DL Funktionalitäten:** Da Machine Learning einiges an mathematischen Berechnungen erfordert, soll TensorFlow vor allem für Vektor- bzw Matrizen-Operationen und andere Rechenoperationen aus Linearen Algebra und Statistik optimiert sein;
+<!-- soll, muss -->
+
+- **ML und DL Funktionalitäten:** Da Machine Learning auf mathematischen Berechnungen beruht, soll TensorFlow Vektor- bzw Matrizen-Operationen und andere Rechenoperationen aus Linearen Algebra und Statistik bereitstellen. Es soll zudem Gradienten automatisch berechnen können;
 
 - **Vielfältige Einsatzmöglichkeit:** Die Bibliothek soll sowohl für eine schnelle Entwicklung der Prototypen als auch für den produktiven Einsatz geeignet sein;
 
-- **Performance:** Da das Training vieler Modelle rechenintensiv ist und einige Zeit in Anspruch nimmt, soll TensorFlow die Berechnungen effizient umsetzen;
+- **Performance:** Da das Training vieler Modelle rechenintensiv ist, soll TensorFlow die Berechnungen effizient umsetzen;
 
-- **Flexibilität:** Die Bibliothel soll die Möglichkeit bieten, ML-Modelle schnell zu entwickeln, aber auch Anpassungen durchzuführen und neue Algorithmen und Modelle zu entwickeln;
+- **Flexibilität:** Die Bibliothek soll die Möglichkeit bieten, ML-Modelle schnell zu entwickeln, aber auch Anpassungen durchzuführen und neue Algorithmen und Modelle zu entwickeln;
 
 - **Skalierbarkeit:** Große Datenmengen und rechenintensive Operationen;
 
