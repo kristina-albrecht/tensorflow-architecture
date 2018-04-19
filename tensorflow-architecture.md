@@ -1,5 +1,5 @@
 ---
-title: "TensorFlow Architektur"
+porttitle: "TensorFlow Architektur"
 
 author:	[Jan Hofmeier, Kristina Albrecht]
 
@@ -58,43 +58,38 @@ Die Bibliothek wird vor allem zur Entwicklung der Anwendungen mit AI-Funktionali
 
 Aus diesen Anwendungsfällen lassen sich die **Anforderungen** an die Bibliothek ableiten:
 
-<!-- soll, muss -->
+| ID            | Kurzbeschreibung           | Anforderung                                                  |
+| ------------- | -------------------------- | ------------------------------------------------------------ |
+| AF1{#af1}     | ML und DL Funktionalitäten | Da Machine Learning auf mathematischen Berechnungen beruht, muss TensorFlow Vektor- bzw Matrizen-Operationen und andere Rechenoperationen aus Linearen Algebra und Statistik bereitstellen. |
+| AF1.1{#af1.1} | Gradients                  | Viele Trainingsalgorithmen benötigen Gradienten, deshalb muss TensorFlow diese selbst bestimmen können. |
+| AU1{#au1}     | Protoyping                 | TensorFlow muss eine Möglichkeit zum schnellen Definieren und Testen von Modellen bereitstellen. |
+| AU2{#au2}     | Produktiver Einsatz        | TensorFlow muss für den produktiven Einsatz (vor allem Inference) geeignet sein. |
+| AP1{#ap1}     | Performance                | Da Maschine Learning durch Rechenleistung limitiert ist, muss TensorFlow die verfügbaren Ressourcen effizent nutzen. |
+| AP2{#ap}      | Skalierbarkeit             | TensroFlow muss mit sehr großen Datenmengen umgehen können.  |
+| AS1{#as1}     | Portabilität               | Die Bibliothek muss auf verschiedene Systeme portierbar sein und unterschiedliche Acceleratoren (GPU, TPU) untersützten. |
+| AR1{#ar}      | Recovery                   | Der Trainingsfortschritt soll nach einem Absturtz wiederherstellbar sein |
 
-- **ML und DL Funktionalitäten:** Da Machine Learning auf mathematischen Berechnungen beruht, soll TensorFlow Vektor- bzw Matrizen-Operationen und andere Rechenoperationen aus Linearen Algebra und Statistik bereitstellen. Es soll zudem Gradienten automatisch berechnen können;
+Portabilität => Device Layer, Kernel implementations
 
-- **Vielfältige Einsatzmöglichkeit:** Die Bibliothek soll sowohl für eine schnelle Entwicklung der Prototypen als auch für den produktiven Einsatz geeignet sein;
+Skalierbarkeit => verteilt, mehrere Worker (Distributed Master, Dataflow Executor, Worker Services)
 
-- **Performance:** Da das Training vieler Modelle rechenintensiv ist, soll TensorFlow die Berechnungen effizient umsetzen;
+Perfomence => C++ Client, Kernel implementations
 
-- **Flexibilität:** Die Bibliothek soll die Möglichkeit bieten, ML-Modelle schnell zu entwickeln, aber auch Anpassungen durchzuführen und neue Algorithmen und Modelle zu entwickeln;
+--Runs on CPUs, GPUs, desktop, server,	or mobile computing	platforms. That	make it	very suitable in several fields	of application, for	instance medical, finance, consumer	electronic,	etc.
 
-- **Skalierbarkeit:** Große Datenmengen und rechenintensive Operationen;
+Flexibilität:	 => High & Low Level APIs
 
-- **Portabilität:** Die Bibliothek soll auf verschiedenen Systemen laufen;
+Vielfältige Einsatzmöglichkeit: Forschung, Prototypen und Produktion  => Python Client, High Level Libraries
+--TensorFlow™ allows industrial researchers a faster product prototyping. It also provides	academic researchers with a	development	framework and a	community to discuss and support novel applications.
 
-   ​
+--Provides tools to assemble graphs for expressing	diverse	machine	learning models. New perations	can	be written in Python and low-level data	operators are implemented using	in C++.
+Portabilität
 
-   Portabilität => Device Layer, Kernel implementations
 
-   Skalierbarkeit => verteilt, mehrere Worker (Distributed Master, Dataflow Executor, Worker Services)
 
-   Perfomence => C++ Client, Kernel implementations
+​
 
-   --Runs on CPUs, GPUs, desktop, server,	or mobile computing	platforms. That	make it	very suitable in several fields	of application, for	instance medical, finance, consumer	electronic,	etc.
-
-   Flexibilität:	 => High & Low Level APIs
-
-   Vielfältige Einsatzmöglichkeit: Forschung, Prototypen und Produktion  => Python Client, High Level Libraries
-   --TensorFlow™ allows industrial researchers a faster product prototyping. It also provides	academic researchers with a	development	framework and a	community to discuss and support novel applications.
-
-   --Provides tools to assemble graphs for expressing	diverse	machine	learning models. New perations	can	be written in Python and low-level data	operators are implemented using	in C++.
-   Portabilität
-
-   ​
-
-   ​
-
-## Anforderungsanalyse
+### Einflussfaktoren
 
 | Faktor-Index | Beschreibung                                                 | Flexibilität | Einfluss |
 | ------------ | ------------------------------------------------------------ | ------------ | -------- |
@@ -124,11 +119,23 @@ Im Weiteren werden 4 Sichten der TensorFlow-Architektur dargestellt: Kontext-Sic
 
 ###Verhaltenssicht (Architekturbausteine)
 
-![](./img/ComponentView.png)
+### 
+
+![](C:/Users/IBM_ADMIN/Documents/DHBW/tensorflow-architecture/img/Structure.png)
+
+### 
+
+###Struktursicht
+
+Tensorflow ist in mehren Schichten Organisiert. Diese reichen von einer Gerätespezifischen Schicht (unten) bis zu High Level Training und Inference Bibliotheken (oben). Diese Schichtenarchitektur erlaubt ein hohes Maß and Flexibilität und Portabilität.
 
 
 
-Kernels
+![](C:/Users/IBM_ADMIN/Documents/DHBW/tensorflow-architecture/img/ComponentView.png)
+
+Der Tensorflow Core stellt seine Funktionalität über eine Low-Level C API bereit. Diese Low-Level API wird durch High-Level APIs für verschiedene Client Sprachen, wie Python, C++, Java und Go gekpaselt. Unter Verwendung der Sprachspezifischen APIs gibt es High-Level Bibliotheken für Training und Inference. 
+
+#### Kernels
 
 - Kernels sind Implementierungen von Operationen, die speziell für die Ausführung auf einer bestimmten Recheneinheit wie CPU oder GPU entwickelt wurden.
 - Die TensorFlow-Bibliothek enthält mehrere solche eingebaute Operationen/Kernels. Beispiele dafür sind:
@@ -146,13 +153,7 @@ Kernels
 
 
 
-### 
-
-###Struktursicht
-
-![](img/Structure.png)
-
-###Source-Code-Hierarchie
+###  Source-Code-Hierarchie
 
 --TensorFlow™ 's root directory	at GitHub is organized in five main	subdirectories: google, tensorflow, third-party, tools and util/python. Additionally, the root directory provides information on how to contribute to the project, and other relevant documents. In figure 3, the source code hierarchy is illustrated.
 
