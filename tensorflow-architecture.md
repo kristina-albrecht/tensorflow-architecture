@@ -56,40 +56,28 @@ TensorFlow wird von verschiedenen **Benutzergruppen** verwendet:
 
 Die Bibliothek wird vor allem zur Entwicklung der Anwendungen mit AI-Funktionalitäten eingesetzt. Zusätzlich wir sie zur Forschungszwecken im Bereich Machine Learning zur Entwicklung der neuen Algorithmen und Modelle verwendet. Außerdem gehören auch Hardware-Hersteller zu einer der Benutzergruppen von TensorFlow, die ihre Produkte (zB. CPUs, GPUs etc.) für Machine Learning-Zwecke optimieren wollen. 
 
-Aus diesen Anwendungsfällen lassen sich die **Anforderungen** an die Bibliothek ableiten:
+Aus diesen Anwendungsfällen lassen sich die **Anforderungen** an die Bibliothek ableiten, die nach FURPS-Merkmalen aufgeteilt werden können. FURPS steht für:
 
-| ID            | Kurzbeschreibung           | Anforderung                                                  |
-| ------------- | -------------------------- | ------------------------------------------------------------ |
-| AF1{#af1}     | ML und DL Funktionalitäten | Da Machine Learning auf mathematischen Berechnungen beruht, muss TensorFlow Vektor- bzw Matrizen-Operationen und andere Rechenoperationen aus Linearen Algebra und Statistik bereitstellen. |
-| AF1.1{#af1.1} | Gradients                  | Viele Trainingsalgorithmen benötigen Gradienten, deshalb muss TensorFlow diese selbst bestimmen können. |
-| AU1{#au1}     | Protoyping                 | TensorFlow muss eine Möglichkeit zum schnellen Definieren und Testen von Modellen bereitstellen. |
-| AU2{#au2}     | Produktiver Einsatz        | TensorFlow muss für den produktiven Einsatz (vor allem Inference) geeignet sein. |
-| AP1{#ap1}     | Performance                | Da Maschine Learning durch Rechenleistung limitiert ist, muss TensorFlow die verfügbaren Ressourcen effizent nutzen. |
-| AP2{#ap}      | Skalierbarkeit             | TensroFlow muss mit sehr großen Datenmengen umgehen können.  |
-| AS1{#as1}     | Portabilität               | Die Bibliothek muss auf verschiedene Systeme portierbar sein und unterschiedliche Acceleratoren (GPU, TPU) untersützten. |
-| AR1{#ar}      | Recovery                   | Der Trainingsfortschritt soll nach einem Absturtz wiederherstellbar sein |
+- Functionality (Funktionalität)
+- Usability (Benutzbarkeit)
+- Reliability (Zuverlässigkeit)
+- Performance (Effizienz)
+- Supportability (Änderbarkeit, Wartbarkeit) 
 
-Portabilität => Device Layer, Kernel implementations
-
-Skalierbarkeit => verteilt, mehrere Worker (Distributed Master, Dataflow Executor, Worker Services)
-
-Perfomence => C++ Client, Kernel implementations
-
---Runs on CPUs, GPUs, desktop, server,	or mobile computing	platforms. That	make it	very suitable in several fields	of application, for	instance medical, finance, consumer	electronic,	etc.
-
-Flexibilität:	 => High & Low Level APIs
-
-Vielfältige Einsatzmöglichkeit: Forschung, Prototypen und Produktion  => Python Client, High Level Libraries
---TensorFlow™ allows industrial researchers a faster product prototyping. It also provides	academic researchers with a	development	framework and a	community to discuss and support novel applications.
-
---Provides tools to assemble graphs for expressing	diverse	machine	learning models. New perations	can	be written in Python and low-level data	operators are implemented using	in C++.
-Portabilität
-
-
-
-​
+| ID       | Kurzbeschreibung           | Anforderung                                                  |
+| -------- | -------------------------- | ------------------------------------------------------------ |
+| F1{#af1} | ML und DL Funktionalitäten | Da Machine Learning auf mathematischen Berechnungen beruht, muss TensorFlow Vektor- bzw Matrizen-Operationen und andere Rechenoperationen aus Linearen Algebra und Statistik bereitstellen. Viele Trainingsalgorithmen benötigen Gradienten, deshalb muss TensorFlow diese selbst bestimmen können. |
+|          |                            |                                                              |
+| U1{#au1} | Protoyping                 | TensorFlow muss eine Möglichkeit zum schnellen Definieren und Testen von Modellen bereitstellen. |
+| U2{#au2} | Produktiver Einsatz        | TensorFlow muss für den produktiven Einsatz (vor allem Inference) geeignet sein. |
+| P1{#ap1} | Performance                | Da Maschine Learning durch Rechenleistung limitiert ist, muss TensorFlow die verfügbaren Ressourcen effizent nutzen. |
+| P2{#ap}  | Skalierbarkeit             | TensroFlow muss mit sehr großen Datenmengen umgehen können.  |
+| S1{#as1} | Portabilität               | Die Bibliothek muss auf verschiedene Systeme portierbar sein und unterschiedliche Acceleratoren (GPU, TPU) untersützten. |
+| R1{#ar}  | Recovery                   | Der Trainingsfortschritt soll nach einem Absturtz wiederherstellbar sein |
 
 ### Einflussfaktoren
+
+Folgende organisatorische, technische und Produkt-bezogene Faktoren können einen Einfluss auf die Architektur-Entscheidung beeinflusst haben.
 
 | Faktor-Index | Beschreibung                                                 |
 | ------------ | ------------------------------------------------------------ |
@@ -98,15 +86,21 @@ Portabilität
 | T1           | Es werden neue Acceleratoren entwickelt                      |
 | T2           | Die Rechenleistung einer Maschine ist begrenzt, weshalb horizontal skaliert werden muss |
 | T3           | Auf Clustern und im Produktiven Einsatz kommt vor allem Linux zum Einsatz, die User verwenden oft OS  X oder Windows. Es muss aber auch auf noch unbekannten Betriebsystem einsetzbar sein. |
-|              | Neue Bibliotheken integrieren                                |
-| P1           | System kann abstürzen                                        |
+| P1           | Neue Bibliotheken können integriert werden                   |
+|              |                                                              |
 | P2           | Modell kann sehr komplex werden und viele Daten involvieren  |
 
 
 
 ## Architekturentwurf
 
-Im Weiteren werden 4 Sichten der TensorFlow-Architektur dargestellt: Kontext-Sicht, Entwurfssicht (Development View), Ablaufssicht (Process View) und Physikalische Sicht (Deployment View).
+Im Weiteren werden 4+1 Sichten der TensorFlow-Architektur dargestellt: Szenarien, Kontext-Sicht, Verhaltenssicht, Struktursicht, Abbildungssicht.
+
+### Szenarien 
+
+![Szenarien](./img/UseCases.png)
+
+
 
 ### Kontext-Sicht
 
@@ -118,7 +112,7 @@ Im Weiteren werden 4 Sichten der TensorFlow-Architektur dargestellt: Kontext-Sic
 
 ### 
 
-![](C:/Users/IBM_ADMIN/Documents/DHBW/tensorflow-architecture/img/Structure.png)
+![Datenfluss in TensorFlow](./img/tensors_flowing.gif)
 
 ### 
 
@@ -134,7 +128,7 @@ Der Distribution master ist dafür verantwortlich die Berechnungen auf mehre Dat
 
 
 
-![](C:/Users/IBM_ADMIN/Documents/DHBW/tensorflow-architecture/img/ComponentView.png)
+![Schichtenarchitektur von TensorFlow](./img/StructureLayers.png)
 
 
 
@@ -164,10 +158,31 @@ Der Distribution master ist dafür verantwortlich die Berechnungen auf mehre Dat
 
 --TensorFlow™ 's root directory	at GitHub is organized in five main	subdirectories: google, tensorflow, third-party, tools and util/python. Additionally, the root directory provides information on how to contribute to the project, and other relevant documents. In figure 3, the source code hierarchy is illustrated.
 
-![Source-Code-Hierarchie](img/TensorFlowTree.png){height=400px}
+![Source-Code-Hierarchie](./img/code_hierarchie.png){height=400px}
 
 
 
 ###	Abblidungssicht (Ausführungseinheiten)
 
-![](./img/Deployment.png)
+![Single-Machine vs. verteilte Ausführung](./img/Deployment.png)
+
+
+
+### Fazit
+
+Portabilität => Device Layer, Kernel implementations
+
+Skalierbarkeit => verteilt, mehrere Worker (Distributed Master, Dataflow Executor, Worker Services)
+
+Perfomence => C++ Client, Kernel implementations
+
+--Runs on CPUs, GPUs, desktop, server,	or mobile computing	platforms. That	make it	very suitable in several fields	of application, for	instance medical, finance, consumer	electronic,	etc.
+
+Flexibilität:	 => High & Low Level APIs
+
+Vielfältige Einsatzmöglichkeit: Forschung, Prototypen und Produktion  => Python Client, High Level Libraries
+--TensorFlow™ allows industrial researchers a faster product prototyping. It also provides	academic researchers with a	development	framework and a	community to discuss and support novel applications.
+
+--Provides tools to assemble graphs for expressing	diverse	machine	learning models. New perations	can	be written in Python and low-level data	operators are implemented using	in C++.
+Portabilität
+
