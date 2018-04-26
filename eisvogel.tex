@@ -44,7 +44,7 @@ $if(colorlinks)$
 \PassOptionsToPackage{dvipsnames,svgnames*,x11names*,table}{xcolor}
 $endif$
 %
-\documentclass[$if(fontsize)$$fontsize$,$endif$$if(lang)$$babel-lang$,$endif$$if(papersize)$$papersize$paper,$else$a4paper,$endif$$if(beamer)$ignorenonframetext,$if(handout)$handout,$endif$$if(aspectratio)$aspectratio=$aspectratio$,$endif$$endif$oneside,$for(classoption)$$classoption$$sep$,$endfor$,captions=tablesignature]{scrbook}
+\documentclass[$if(fontsize)$$fontsize$,$endif$$if(lang)$$babel-lang$,$endif$$if(papersize)$$papersize$paper,$else$a4paper,$endif$$if(beamer)$ignorenonframetext,$if(handout)$handout,$endif$$if(aspectratio)$aspectratio=$aspectratio$,$endif$$endif$oneside,$for(classoption)$$classoption$$sep$,$endfor$,tablecaptionabove]{scrbook}
 $if(beamer)$
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
@@ -66,8 +66,12 @@ $endif$
 $if(acs)$
 \usepackage{acronym}
 $endif$
+\usepackage{graphicx}
+\usepackage{subfig}
+
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
+\usepackage{floatrow}
 \usepackage{fixltx2e} % provides \textsubscript
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[$if(fontenc)$$fontenc$$else$T1$endif$]{fontenc}
@@ -201,9 +205,9 @@ $if(verbatim-in-note)$
 \VerbatimFootnotes % allows verbatim text in footnotes
 $endif$
 $if(geometry)$
-\usepackage[margin=1.5cm,headsep=.2cm,footskip=0.8cm,includehead=true,includefoot=true,centering,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
+\usepackage[margin=2.5cm,headsep=.2cm,footskip=0.8cm,includehead=true,includefoot=true,centering,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
 $else$
-\usepackage[margin=1.5cm,headsep=.2cm,footskip=0.8cm,includehead=true,includefoot=true,centering]{geometry}
+\usepackage[margin=2.5cm,headsep=.2cm,footskip=0.8cm,includehead=true,includefoot=true,centering]{geometry}
 $endif$
 $if(beamer)$
 \newif\ifbibliography
@@ -218,12 +222,9 @@ $for(bibliography)$
 \addbibresource{$bibliography$}
 $endfor$
 $endif$
+$if(listings)$
 \usepackage{listings}
 \newcommand{\passthrough}[1]{#1}
-$if(listings)$
-%\usepackage{verbatim}
-%\usepackage{listings}
-%\newcommand{\passthrough}[1]{#1}
 $endif$
 $if(lhs)$
 \lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small\ttfamily}}{}
@@ -234,9 +235,7 @@ $endif$
 $if(tables)$
 \usepackage{longtable,booktabs}
 $if(beamer)$
-\usepackage[tablecaption=b]{caption}
-\captionsetup[table]{position=bottom}
-\captionsetup[listing]{position=bottom}
+\usepackage{caption}
 % These lines are needed to make table captions work with longtable:
 \makeatletter
 \def\fnum@table{\tablename~\thetable}
@@ -385,6 +384,9 @@ $endif$
 $endif$
 
 
+
+
+
 %%
 %% added
 %%
@@ -487,7 +489,7 @@ $endif$
 \definecolor{caption-color}{HTML}{777777}
 \usepackage[font={stretch=1.2}, textfont={color=caption-color}, position=top, skip=4mm, labelfont=bf, singlelinecheck=false, justification=$if(caption-justification)$$caption-justification$$else$raggedright$endif$]{caption}
 \setcapindent{0em}
-\captionsetup[longtable]{position=below}
+\captionsetup[longtable]{position=above}
 
 %
 % blockquote
@@ -640,9 +642,9 @@ $endif$
 \lhead{$title$}
 \chead{}
 \rhead{$date$}
-\lfoot{$for(author)$$author$$sep$, $endfor$}
-\cfoot{}
-\rfoot{\thepage}
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
@@ -757,24 +759,53 @@ $endif$
 }
 $endif$
 $endif$
+% Abbildungsverzeichnis
+$if(graphics)$
+	\cleardoublepage
+	\listoffigures
+$endif$
+
+%Tabellenverzeichnis
+$if(tables)$
+	\cleardoublepage
+	\listoftables
+$endif$
+
+% Quellcodeverzeichnis
+$if(listings)$
+\renewcommand{\lstlistlistingname}{List of Listings}
+	\cleardoublepage
+	\lstlistoflistings
+$endif$
 $if(acs)$
 \addchap*{Acronyms}
 \begin{acronym}
-	\acro{AVX}[AVX]{Advanced Vector Extensions}
-	\acro{CPU}[CPU]{Central Proccesing Unit}
+	\acro{API}[API]{Application Programming Interface}
+	\acro{CSS}[CSS]{Cascading Style Sheets}
+	\acro{CSV}[CSV]{Comma-separated values}
+	\acro{DOM}[DOM]{Document Object Model}
+	\acro{ECMA}[ECMA]{European Computer Manufacturers Association}
+	\acro{ES}[ES]{ECMAScript}
+	\acro{HTML}[HTML]{Hyper Text Markup Language}
 	\acro{IBM}[IBM]{International Business Machines Corporation}
-	\acro{IOT}[IOT]{Internet of Things}
-	\acro{I/O}[I/O]{Input Output}
-	\acro{ML}[]{Machine Learning}
-	\acro{SIMD}[SIMD]{Single Instruction Multiple Data}
-	\acro{SMT2}[SMT2]{Simultaneous Multithreading}
-	\acro{SSE}[SSE]{Streaming SIMD Extensions}
+	\acro{JS}[JS]{JavaScript}
+	\acro{JSON}[JSON]{JavaScript Object Notation}
+	\acro{JSX}[JSX]{JavaScript XML}
+	\acro{LDAP}[LDAP]{Lightweight Directory Access Protocol}
+	\acro{NPM}[NPM]{Node Package Manager}
+	\acro{REST}[REST]{Representational State Transfer}
+	\acro{SAR}[SAR]{System Activity Report}
+	\acro{SMIL}[SMIL]{Synchronized Multimedia Integration Language}
+	\acro{SPA}[SPA]{Single Page Application}
+	\acro{SVG}[SVG]{Scalable Vector Graphics}
+	\acro{SQVID}[SQVID]{Simple, Quality, Vision, Individual, Change - Visual Thinking Tool}
+	\acro{TLS}[TLS]{Transport Layer Security}
+	\acro{UI}[UI]{User Interface}
+	\acro{UX}[UX]{User Experience}
+	\acro{VML}[VML]{Vector Markup Language}
+	\acro{WA}[WA]{WebAssemby}
 \end{acronym}
 $endif$
-\listoftables
-\listoffigures
-\renewcommand{\lstlistlistingname}{List of Listings}
-\lstlistoflistings
 
 \newpage
 \pagestyle{fancy}

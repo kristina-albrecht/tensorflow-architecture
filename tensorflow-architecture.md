@@ -13,6 +13,7 @@ titlepage-rule-height: 1
 toc-title: Inhaltsverzeichnis
 bibliography: TensorFlow.bib
 biblio-title: Literatur
+toc: true
 lang: de-DE
 loftitle: "# Abbildungsverzeichnis"
 lotTitle: "# Tabellenverzeichnis"
