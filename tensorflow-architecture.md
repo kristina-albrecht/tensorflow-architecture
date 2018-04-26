@@ -1,51 +1,41 @@
 ---
-porttitle: "TensorFlow Architektur"
-
+title: "TensorFlow Architektur"
 author:	[Jan Hofmeier, Kristina Albrecht]
-
 date: 2018-04-20
-
 subject: "TensorFlow"
-
-tags: [Hana, SSBM]
-
+tags: [TensorFlow, Software Architektur]
 subtitle: "Software Architektur"
-
 titlepage: true
-
 titlepage-color: E0AB0D
-
 titlepage-text-color: FFFFFF
-
 titlepage-rule-color: FFFFFF
-
 titlepage-rule-height: 1
-
+toc-title: Inhaltsverzeichnis
 bibliography: TensorFlow.bib
 biblio-title: Literatur
+lang: de-DE
+loftitle: "# Abbildungsverzeichnis"
+lotTitle: "# Tabellenverzeichnis"
 ---
 
-# TensorFlow-Architektur
+# TensorFlow
 
-## Was ist TensorFlow
 TensorFlow ist eine Machine Learning Bibliothek, welche 2015 von Google als  Open-Source veröffentlicht wurde. Der Schwerpunkt der Bibliothek liegt auf neuronalen Netzen und tiefen neuronalen Netzen, die in der letzen Zeit eine umfangreiche Anwendung in vielen Bereichen der künstlichen Intelligenz wie Bilderkennung und Spracheanalyse gefunden haben. 
 
-TensorFlow wurde als Nachfolger einer anderen Bibliothek für Machine Learning, **DistBelief**, entwickelt. DistBelief wurde im Rahmen des Google Brain Projekts im Jahr 2011 entwickelt, um die Nutzung von hochskalierbaren tiefen neuronalen Netzen (DNN) zu erforschen. Die Bibliothek wurde unter anderem für unsupervised Lernen, Bild- und Spracherkennung und auch bei der Evaluation von Spielzügen im Brettspiel Go eingesetzt. [@TensorFlow2018]
+TensorFlow wurde als Nachfolger einer anderen Bibliothek für Machine Learning, **DistBelief**, entwickelt. DistBelief wurde im Rahmen des Google Brain Projekts im Jahr 2011 entwickelt, um die Nutzung von hochskalierbaren tiefen neuronalen Netzen (DNN) zu erforschen. Die Bibliothek wurde unter anderem für unsupervised Lernen, Bild- und Spracherkennung und auch bei der Evaluation von Spielzügen im Brettspiel Go eingesetzt. [@LargeScale2012, S.1]
 
 Trotz des erfolgreichen Einsatzes hatte DistBelief einige Einschränkungen:
 
 - die NN-Schichten mussten (im Gegensatz zum genutzten Python-Interface) aus Effizienz-Gründen mit C++ definiert werden. <!-- Nur die NN Schichten oder die Modelle allgemein? -->
 - die Gradientenfunktion zur Minimierung des Fehlers erforderte eine Anpassung der Implementierung des integrierten Parameter-Servers. 
 - nur vorwärtsgerichtete Algorithmen möglich rekurrente KNN oder Reinforcement Learning möglich.
-- wurde nurfür die Anwendung auf großen Clustern von Multi-Core-CPU-Servern entwickelt, keine Unterstützung von GPUs oder anderen Prozessoren.
+- wurde nurfür die Anwendung auf großen Clustern von Multi-Core-CPU-Servern entwickelt, keine Unterstützung von GPUs oder anderen Prozessoren. [@DelftUniversity2017]
 
-Aus den Erfahrungen mit DistBelief wurde gelernt und diese Erfahrungen wurden bei der Entwicklung von TensorFlow berücksichtigt. Interessant ist, dass DistBelief zwar als Prototyp für TensorFlow genommen wurde, an dem verschiedene Funktionalitäten ausprobiert und getestet wurden, allerdings wurde TensorFlow komplett neu entwicklelt. Das ist ein Beispiel dafür, dass Prototype sehr praktisch sind, dass es jedoch auch wichtig ist, deren Vor- und Nachteile zu bewerten und im Laufe der Entwicklung Prototype auch zu verwerfen.
-
-
+Aus den Erfahrungen mit DistBelief wurde gelernt und diese Erfahrungen wurden bei der Entwicklung von TensorFlow berücksichtigt. Interessant ist, dass DistBelief zwar als Prototyp für TensorFlow genommen wurde, an dem verschiedene Funktionalitäten ausprobiert und getestet wurden, allerdings wurde TensorFlow komplett neu entwicklelt. Das ist ein Beispiel dafür, dass Prototype sehr praktisch sind, dass es jedoch auch wichtig ist, deren Vor- und Nachteile zu bewerten und im Laufe der Entwicklung Prototype auch zu verwerfen. [@LargeScale2012, S.2]
 
 Im Weiteren werden die Anforderungen verschiedener Benutzergruppen beschrieben und die Architektur der Bibliothek ausführlich erläutert.
 
-## Anforderungsanalyse
+# Anforderungsanalyse
 
 TensorFlow wird von verschiedenen **Benutzergruppen** verwendet:
 
@@ -56,6 +46,8 @@ TensorFlow wird von verschiedenen **Benutzergruppen** verwendet:
 
 Die Bibliothek wird vor allem zur Entwicklung der Anwendungen mit AI-Funktionalitäten eingesetzt. Zusätzlich wir sie zur Forschungszwecken im Bereich Machine Learning zur Entwicklung der neuen Algorithmen und Modelle verwendet. Außerdem gehören auch Hardware-Hersteller zu einer der Benutzergruppen von TensorFlow, die ihre Produkte (zB. CPUs, GPUs etc.) für Machine Learning-Zwecke optimieren wollen. 
 
+## Anforderungen
+
 Aus diesen Anwendungsfällen lassen sich die **Anforderungen** an die Bibliothek ableiten, die nach FURPS-Merkmalen aufgeteilt werden können. FURPS steht für:
 
 - Functionality (Funktionalität)
@@ -64,18 +56,20 @@ Aus diesen Anwendungsfällen lassen sich die **Anforderungen** an die Bibliothek
 - Performance (Effizienz)
 - Supportability (Änderbarkeit, Wartbarkeit) 
 
-| ID       | Kurzbeschreibung           | Anforderung                                                  |
-| -------- | -------------------------- | ------------------------------------------------------------ |
-| F1{#af1} | ML und DL Funktionalitäten | Da Machine Learning auf mathematischen Berechnungen beruht, muss TensorFlow Vektor- bzw Matrizen-Operationen und andere Rechenoperationen aus Linearen Algebra und Statistik bereitstellen. Viele Trainingsalgorithmen benötigen Gradienten, deshalb muss TensorFlow diese selbst bestimmen können. |
-|          |                            |                                                              |
-| U1{#au1} | Protoyping                 | TensorFlow muss eine Möglichkeit zum schnellen Definieren und Testen von Modellen bereitstellen. |
-| U2{#au2} | Produktiver Einsatz        | TensorFlow muss für den produktiven Einsatz (vor allem Inference) geeignet sein. |
-| P1{#ap1} | Performance                | Da Maschine Learning durch Rechenleistung limitiert ist, muss TensorFlow die verfügbaren Ressourcen effizent nutzen. |
-| P2{#ap}  | Skalierbarkeit             | TensroFlow muss mit sehr großen Datenmengen umgehen können.  |
-| S1{#as1} | Portabilität               | Die Bibliothek muss auf verschiedene Systeme portierbar sein und unterschiedliche Acceleratoren (GPU, TPU) untersützten. |
-| R1{#ar}  | Recovery                   | Der Trainingsfortschritt soll nach einem Absturtz wiederherstellbar sein |
+| ID   | Kurzbeschreibung           | Anforderung                                                  |
+| ---- | -------------------------- | ------------------------------------------------------------ |
+| F1   | ML und DL Funktionalitäten | Da Machine Learning auf mathematischen Berechnungen beruht, muss TensorFlow Vektor- bzw Matrizen-Operationen und andere Rechenoperationen aus Linearen Algebra und Statistik bereitstellen. Viele Trainingsalgorithmen benötigen Gradienten, deshalb muss TensorFlow diese selbst bestimmen können. |
+|      |                            |                                                              |
+| U1   | Protoyping                 | TensorFlow muss eine Möglichkeit zum schnellen Definieren und Testen von Modellen bereitstellen. |
+| U2   | Produktiver Einsatz        | TensorFlow muss für den produktiven Einsatz (vor allem Inference) geeignet sein. |
+| P1   | Performance                | Da Maschine Learning durch Rechenleistung limitiert ist, muss TensorFlow die verfügbaren Ressourcen effizent nutzen. |
+| P2   | Skalierbarkeit             | TensroFlow muss mit sehr großen Datenmengen umgehen können.  |
+| S1   | Portabilität               | Die Bibliothek muss auf verschiedene Systeme portierbar sein und unterschiedliche Acceleratoren (GPU, TPU) untersützten. |
+| R1   | Recovery                   | Der Trainingsfortschritt soll nach einem Absturtz wiederherstellbar sein |
 
-### Einflussfaktoren
+: Anforderungen an TensorFlow
+
+## Einflussfaktoren
 
 Folgende organisatorische, technische und Produkt-bezogene Faktoren können einen Einfluss auf die Architektur-Entscheidung beeinflusst haben.
 
@@ -90,35 +84,33 @@ Folgende organisatorische, technische und Produkt-bezogene Faktoren können eine
 |              |                                                              |
 | P2           | Modell kann sehr komplex werden und viele Daten involvieren  |
 
+: Einflussfaktoren
 
-
-## Architekturentwurf
+# Architekturentwurf
 
 Im Weiteren werden 4+1 Sichten der TensorFlow-Architektur dargestellt: Szenarien, Kontext-Sicht, Verhaltenssicht, Struktursicht, Abbildungssicht.
 
-### Szenarien 
+## Szenarien
 
 Die Hauptbenutzer von TensorFlow sind 1) Software-Architekten und Engineure, die ML-Anwendungen entwerfen und schnelle Prototypen benötigen 2) Entwickler, die ML-Anwendungen für den produktiven Einsatz entwickeln 3) Studierenden und Wissenschaftler, die das Framework für das Experimentieren und die Entwicklung neuer ML-Algorithmen verwenden.
 
 ![Szenarien](./img/UseCases.png)
 
-
-
-### Kontext-Sicht
+## Kontext-Sicht
 
 TensorFlow wurde uersprünglich von Google entwickelt und ist auch immer noch unter der Kontrolle von Google. Auch wenn das Projekt Open Source ist, trägt Google im Wesentlichen der Weiterentwicklung von TensorFlow bei, managt den Prozess und unterstützt die Contributors und die Community. Zudem sind Firmen, die das Framework einsetzen ebenfalls an der Weiterentwicklung des Projekts interessiert, ebenso wie die Integrators, die vor allem an der schnellen Performance und Unterstützung für ihre Plattformen interessiert sind. Die Wissenschaftler legen einen großen Wert auf die Einfachheit der Verwendung, die Möglichkeit der schnellen Entwicklung der Prototypen, sowie Hilfstools (Visualisierungen wie Tensorboard, Debugging etc.)
 
 Zur Versionsverwaltung und Collaberation kommt ein öffentliches GitHub Repository zum Einsatz. Neue Versionen werden automatisch von einer Jenkins CI für verschiedene Plattformen gebaut und getestet. 
 
-TensorFlow verwendet externe Bibliotheken, beispielsweise für Lineare Algebra oder die CUDA Schnittstelle für Nvidia GPUs. Viele der High Level Bibliotheken sind in Python und das Backend in C++ geschrieben, weshalb es einen Python Interpreter und eine C++ Laufzeit zum ausführen benötigt und einen C++ Compiler zum bauen.   
+TensorFlow verwendet externe Bibliotheken, beispielsweise für Lineare Algebra oder die CUDA Schnittstelle für Nvidia GPUs. Viele der High Level Bibliotheken sind in Python und das Backend in C++ geschrieben, weshalb es einen Python Interpreter und eine C++ Laufzeit zum ausführen benötigt und einen C++ Compiler zum bauen. [@DelftUniversity2017]
 
-![Dependencies](img/Contextview.png){height=400px}
+![Kontextsicht](img/Contextview.png){height=400px}
 
+## Verhaltenssicht (Architekturbausteine)
 
+![Verhaltenssicht: Datenfluss in TensorFlow](./img/tensors_flowing.gif)
 
-###Verhaltenssicht (Architekturbausteine)
-
-![Datenfluss in TensorFlow](./img/tensors_flowing.gif)
+[@Graph2018]
 
 In TensorFlow werden Berechnungen als Graphen dargestellt. Diese Graphen lassen sich innerhalb einer Session ausführen. In den Graphen gibt es drei Grundarten von Knoten: Operationen, Placeholder und Variablen. Placeholder werden beim ausführen durch einen konkreten Wert ersetzt. Sie stellen Eingabewerte (hier der Input Node) dar. Variablen halten Werte, die in der Session gespeichtert und verändert werden können. Hier sind das beispielsweise die Weights $W$ und Biaseses $b$. Operationen sind hier Beispielsweise Matrix Multiplikation $MatMul$ oder $BiasAdd$. Die Ein- und Ausgabewerte der Knoten sind jeweils Tensoren, welche entlang der Kanten "fließen". Ein Subgraph lässt sich zu einer Komponente zusammenfassen, hier sind das $ReLu\space Layer$, $Logit\space Layer$ und $SDG\space Trainer$.
 
@@ -128,7 +120,7 @@ Bei Inference wird die Ausgabe des letzten Layers durch die Softmax-Funktion in 
 
  
 
-###Struktursicht
+## Struktursicht
 
 Tensorflow ist in mehren Schichten organisiert. Diese reichen von einer Geräte-spezifischen Schicht (unten) bis zu High Level Training und Inference Bibliotheken (oben). Der Tensorflow Core stellt seine Funktionalität über eine Low-Level C API bereit. Diese Low-Level API wird durch High-Level APIs für verschiedene Client-Sprachen, wie Python, C++, Java und Go gekpaselt. Unter Verwendung der Sprachspezifischen APIs gibt es High-Level Bibliotheken für Training und Inference. 
 
@@ -140,9 +132,9 @@ Der Distribution master ist dafür verantwortlich die Berechnungen auf mehre Dat
 
 
 
-![Schichtenarchitektur von TensorFlow](./img/StructureLayers.png)
+![Struktursicht: Schichtenarchitektur von TensorFlow](./img/StructureLayers.png)
 
-
+[@TensorFlowArchitecture2018]
 
 #### Kernels
 
@@ -160,17 +152,17 @@ Der Distribution master ist dafür verantwortlich die Berechnungen auf mehre Dat
 | Queue und Synchronisations- operationen | Enqueue, Dequeue, MutexAcquire, MutexRelease         |
 | Flusskontroll-Operationen               | Merge, Switch, Enter, Leave, NextIteration           |
 
-- TensorFlow untersützt das einbinden eigener Kernel.
+: Kernel Implementierungen
 
+Außerdem untersützt TensorFlow das einbinden eigener Kernel.
 
-
-
-
-###  Source-Code-Hierarchie
+## Source-Code-Hierarchie
 
 Die Architektur lässt sich in den Verzeichnissen auf TensorFlow-GitHub wiedererkennen. Die Code-Hierarchie enthält folgende Verzeichnisse: 
 
 ![Source-Code-Hierarchie](./img/code_hierarchie.png){height=400px}
+
+[@GitHub2018]
 
 - cc: Funktions-Wrapper für den C++ Code.
 - core: Implementierung der Hauptfunktionalitäten von TensorFlow.
@@ -184,16 +176,15 @@ Die Architektur lässt sich in den Verzeichnissen auf TensorFlow-GitHub wiederer
 - user_ops: Wrapper für die Benutzer-spezifischen (angepassten) Funktionen.
 
 
-
-###	Abblidungssicht (Ausführungseinheiten)
+## Abblidungssicht (Ausführungseinheiten)
 
 Die in TensorFlow erstellten Programme (Modelle) können sowohl lokal auf einem System, als auch verteilt auf mehreren Systemen ausgeführt werden. Der Master-Prozess kümmert sich um die Verteilung der Operationen zwischen den verfügbaren Ressourcen. 
 
-![Single-Machine vs. verteilte Ausführung](./img/Deployment.png)
+![Abbildungssicht: Single-Machine vs. verteilte Ausführung](./img/Deployment.png)
 
+[@LargeScale2012, S. 5]
 
-
-### Fazit
+# Fazit
 
 Zusammenfassend lässt sich festhalten, dass sich die Anforderungen an das ML-Framework in der Architektur von TensorFlow wieder finden. Das Framework beitet die wesentlichen **Machine Learning Funktionalitäten** mit einer Spezialisierung für Deeplearning (breite Gradient Descent Unterstütztung). Die High-Level API erleichtert die Erstellung von Prototypen, während die Low-Level API die Möglichkeit bietet, flexibel zu bleiben und die Modelle anzupassen, um allen Anforderungen für produktiven Einsatz gerecht zu werden. 
 
