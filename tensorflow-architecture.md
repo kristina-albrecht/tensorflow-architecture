@@ -110,11 +110,17 @@ Im Weiteren werden 4+1 Sichten der TensorFlow-Architektur dargestellt: Szenarien
 
 ###Verhaltenssicht (Architekturbausteine)
 
-### 
+###
 
 ![Datenfluss in TensorFlow](./img/tensors_flowing.gif)
 
-### 
+In TensorFlow werden Berechnungen als Graphen dargestellt. Diese Graphen lassen sich innerhalb einer Session ausführen. In den Graphen gibt drei Grundarten von Knoten: Operationen, Placeholder und Variablen. Placeholder, werden beim ausführen durch einen konkreten Wert ersetzt. Sie stellen Eingabewerte (hier der Input Node) dar. Variablen halten Werte, die in der Session gespeichtert werden und verändert werden können. Hier sind das beispielsweise die Weights $W$ und Biaseses $b$. Operationen sind hier Beispielsweise Matrix Multiplikation $MatMul$ oder $BiasAdd$. Die ein und Ausgabewerte der Nodes sind jeweils Tensoren, welche entlang der Kanten "fließen". Ein Subgraph lässt sich zu einer Komponente zusammenfassen, hier sind das $ReLu\space Layer$, $Logit\space Layer$ und $SDG\space Trainer$.
+
+Der Graph stellt ein Neuronales Netzwerk mit zwei Layern da, welches Classification macht und über Statistic Gradient Descent trainiert wird. Die Trainingsdaten werden im $Input$ Placeholder eingegeben und und in Labels und die Feature Matrix aufgeteilt. Die Feature Matrix wird stellt die Eingabedaten für den Forwardpass durch das Neuronale Netz genutzt. In vectorisierter Form lässt sich die Multiplikation jedes Features mit dem entsprechenden Gewicht für alle Samples als Matrixmultiplikation ausdrücken. Der erste Layer nutzt ReLu als activation Function, deren Ausgabe Matrix die Eingabe für den zweiten Layer ist.
+Für das Training werden die Labels One Hot Kodiert $Class\space Labels$ und über die $Cross\space Entropie$ Cost Function mit der Ausgabe des letzten Layers Netzes verglichen. Der Trainingsprozess besteht darin, dass mit Hilfe von Gradient Descent die Variablen die Cost Function für die Trainingsdaten minimiert wird, indem die $W$ und $b$ in kleinen Schritten angepasst werden. Da ein Minimum der Cost Function gesucht wird. Anhand der Partiellen Ableitungen (Gradients) nach den Variablen ergibt sich die Richtung in der Sich das Minimum befindet und entsprechend werden die Variablen geupdated in den $Update$ angepasst. Das geschieht in mehren Iterationen, sodass man entsprechend Gradients sich einem (lokalen) Minimum annähert.
+Bei Inference wird die Ausgabe des letzten Layers durch die Softmax Funktion in den Interval [0,1] gebracht, was der Wahrscheinlichkeit entspricht, mit der das Netz ein Sample einer Klasse zuordnet. Das Netz nutzt dazu die in der Session gespeicherten trainierten Weights und Biases. Der Gleiche Graph kann auch in unterschiedlichen Session für unterschiedliche Daten Trainiert werden.
+
+ 
 
 ###Struktursicht
 
