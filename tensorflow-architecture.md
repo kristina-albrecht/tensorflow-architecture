@@ -29,9 +29,9 @@ TensorFlow wurde als Nachfolger einer anderen Bibliothek für Machine Learning, 
 
 Trotz des erfolgreichen Einsatzes hatte DistBelief einige Einschränkungen:
 
-- die NN-Schichten mussten (im Gegensatz zum genutzten Python-Interface) aus Effizienz-Gründen mit C++ definiert werden. <!-- Nur die NN Schichten oder die Modelle allgemein? -->
-- die Gradientenfunktion zur Minimierung des Fehlers erforderte eine Anpassung der Implementierung des integrierten Parameter-Servers. 
-- nur vorwärtsgerichtete Algorithmen möglich rekurrente KNN oder Reinforcement Learning möglich.
+- die Schichten der Neuronalen Netzwerke (NN) mussten (im Gegensatz zum genutzten Python-Interface) aus Effizienz-Gründen mit C++ definiert werden. <!-- Nur die NN Schichten oder die Modelle allgemein? -->
+- die Gradientenfunktion zur Optimierung der Gewichte erforderte eine Anpassung der Implementierung des integrierten Parameter-Servers. 
+- nur vorwärtsgerichtete Algorithmen möglich, jedoch nicht rekurrente NN oder Reinforcement Learning.
 - wurde nurfür die Anwendung auf großen Clustern von Multi-Core-CPU-Servern entwickelt, keine Unterstützung von GPUs oder anderen Prozessoren. [@DelftUniversity2017]
 
 Aus den Erfahrungen mit DistBelief wurde gelernt und diese Erfahrungen wurden bei der Entwicklung von TensorFlow berücksichtigt. Interessant ist, dass DistBelief zwar als Prototyp für TensorFlow genommen wurde, an dem verschiedene Funktionalitäten ausprobiert und getestet wurden, allerdings wurde TensorFlow komplett neu entwicklelt. Das ist ein Beispiel dafür, dass Prototype sehr praktisch sind, dass es jedoch auch wichtig ist, deren Vor- und Nachteile zu bewerten und im Laufe der Entwicklung Prototype auch zu verwerfen. [@LargeScale2012, S.2]
@@ -66,7 +66,7 @@ Aus diesen Anwendungsfällen lassen sich die **Anforderungen** an die Bibliothek
 | U1   | Protoyping                 | TensorFlow muss eine Möglichkeit zum schnellen Definieren und Testen von Modellen bereitstellen. |
 | U2   | Produktiver Einsatz        | TensorFlow muss für den produktiven Einsatz (vor allem Inference) geeignet sein. |
 | P1   | Performance                | Da Maschine Learning durch Rechenleistung limitiert ist, muss TensorFlow die verfügbaren Ressourcen effizent nutzen. |
-| P2   | Skalierbarkeit             | TensroFlow muss mit sehr großen Datenmengen umgehen können.  |
+| P2   | Skalierbarkeit             | TensorFlow muss mit sehr großen Datenmengen umgehen können.  |
 | S1   | Portabilität               | Die Bibliothek muss auf verschiedene Systeme portierbar sein und unterschiedliche Acceleratoren (GPU, TPU) untersützten. |
 | R1   | Recovery                   | Der Trainingsfortschritt soll nach einem Absturtz wiederherstellbar sein |
 
@@ -74,7 +74,7 @@ Aus diesen Anwendungsfällen lassen sich die **Anforderungen** an die Bibliothek
 
 ## Einflussfaktoren
 
-Folgende organisatorische, technische und Produkt-bezogene Faktoren können einen Einfluss auf die Architektur-Entscheidung beeinflusst haben.
+Folgende organisatorische, technische und produktbezogene Faktoren können einen Einfluss auf die Architektur-Entscheidung beeinflusst haben.
 
 | Faktor-Index | Beschreibung                                                 |
 | ------------ | ------------------------------------------------------------ |
@@ -101,24 +101,24 @@ Die Hauptbenutzer von TensorFlow sind 1) Software-Architekten und Engineure, die
 
 ## Kontext-Sicht
 
-TensorFlow wurde uersprünglich von Google entwickelt und ist auch immer noch unter der Kontrolle von Google. Auch wenn das Projekt Open Source ist, trägt Google im Wesentlichen der Weiterentwicklung von TensorFlow bei, managt den Prozess und unterstützt die Contributors und die Community. Zudem sind Firmen, die das Framework einsetzen ebenfalls an der Weiterentwicklung des Projekts interessiert, ebenso wie die Integrators, die vor allem an der schnellen Performance und Unterstützung für ihre Plattformen interessiert sind. Die Wissenschaftler legen einen großen Wert auf die Einfachheit der Verwendung, die Möglichkeit der schnellen Entwicklung der Prototypen, sowie Hilfstools (Visualisierungen wie Tensorboard, Debugging etc.)
+TensorFlow wurde ursprünglich von Google entwickelt und ist auch immer noch unter der Kontrolle von Google. Auch wenn das Projekt Open Source ist, trägt Google im Wesentlichen der Weiterentwicklung von TensorFlow bei, steuert den Prozess und unterstützt die Contributors und die Community. Zudem sind Firmen, die das Framework einsetzen ebenfalls an der Weiterentwicklung des Projekts interessiert, ebenso wie die Integrators, die vor allem an der schnellen Performance und Unterstützung für ihre Plattformen interessiert sind. Die Wissenschaftler legen einen großen Wert auf die Einfachheit der Verwendung, die Möglichkeit der schnellen Entwicklung der Prototypen, sowie Hilfstools (Visualisierungen wie Tensorboard, Debugging etc.)
 
 Zur Versionsverwaltung und Collaberation kommt ein öffentliches GitHub Repository zum Einsatz. Neue Versionen werden automatisch von einer Jenkins CI für verschiedene Plattformen gebaut und getestet. 
 
-TensorFlow verwendet externe Bibliotheken, beispielsweise für Lineare Algebra oder die CUDA Schnittstelle für Nvidia GPUs. Viele der High Level Bibliotheken sind in Python und das Backend in C++ geschrieben, weshalb es einen Python Interpreter und eine C++ Laufzeit zum ausführen benötigt und einen C++ Compiler zum bauen. [@DelftUniversity2017]
+TensorFlow verwendet externe Bibliotheken, beispielsweise für Lineare Algebra oder die CUDA Schnittstelle für Nvidia GPUs. Viele der High Level Bibliotheken sind in Python und das Backend in C++ geschrieben, weshalb es einen Python Interpreter und eine C++ Laufzeit zum Ausführen benötigt und einen C++ Compiler zum Kompilieren.
 
-![Kontextsicht](img/Contextview.png){height=400px}
+![Kontextsicht [@DelftUniversity2017]](img/Contextview.png){height=400px}
 
 ## Verhaltenssicht (Architekturbausteine)
 
-![Verhaltenssicht: Datenfluss in TensorFlow](./img/tensors_flowing.gif)
+In TensorFlow werden Berechnungen als Graphen dargestellt. Diese Graphen lassen sich innerhalb einer Session ausführen. In den Graphen gibt es drei Grundarten von Knoten: Operationen, Placeholder und Variablen. Placeholder werden beim Ausführen durch einen konkreten Wert ersetzt. Sie stellen Eingabewerte (hier der Input Node) dar. Variablen halten Werte, die in der Session gespeichtert und verändert werden können. Hier sind das beispielsweise die Weights $W$ und Biases $b$. Operationen sind hier beispielsweise Matrix Multiplikation $MatMul$ oder $BiasAdd$. Die Ein- und Ausgabewerte der Knoten sind jeweils Tensoren, welche entlang der Kanten "fließen". Ein Subgraph lässt sich zu einer Komponente zusammenfassen, hier sind das $ReLu\space Layer$, $Logit\space Layer$ und $SDG\space Trainer$. 
 
-[@Graph2018]
 
-In TensorFlow werden Berechnungen als Graphen dargestellt. Diese Graphen lassen sich innerhalb einer Session ausführen. In den Graphen gibt es drei Grundarten von Knoten: Operationen, Placeholder und Variablen. Placeholder werden beim ausführen durch einen konkreten Wert ersetzt. Sie stellen Eingabewerte (hier der Input Node) dar. Variablen halten Werte, die in der Session gespeichtert und verändert werden können. Hier sind das beispielsweise die Weights $W$ und Biaseses $b$. Operationen sind hier Beispielsweise Matrix Multiplikation $MatMul$ oder $BiasAdd$. Die Ein- und Ausgabewerte der Knoten sind jeweils Tensoren, welche entlang der Kanten "fließen". Ein Subgraph lässt sich zu einer Komponente zusammenfassen, hier sind das $ReLu\space Layer$, $Logit\space Layer$ und $SDG\space Trainer$.
 
-Der Graph stellt ein Neuronales Netzwerk mit zwei Layern dar, welches Classification macht und über Statistic Gradient Descent trainiert wird. Die Trainingsdaten werden im $Input$ Placeholder eingegeben und in Labels und die Feature Matrix aufgeteilt. Die Feature Matrix f[r] die Eingabedaten für den Forwardpass durch das Neuronale Netz genutzt. In vektorisierter Form lässt sich die Multiplikation jedes Features mit dem entsprechenden Gewicht für alle Samples als Matrixmultiplikation ausdrücken. Der erste Layer nutzt ReLu als *activation function*, deren Ausgabe Matrix die Eingabe für den zweiten Layer ist.
-Für das Training werden die Labels als One-Hot-Vektor kodiert ($Class\space Labels$) und über die $Cross\space Entropie$ Cost-Function mit der Ausgabe des letzten Layers Netzes verglichen. Der Trainingsprozess besteht darin, dass mit Hilfe von Gradient Descent die Variablen die Cost-Function für die Trainingsdaten minimiert wird, indem die $W$ und $b$ in kleinen Schritten angepasst werden. Da ein Minimum der Cost-Function gesucht wird. Anhand der partiellen Ableitungen (Gradients) nach den Variablen ergibt sich die Richtung in der Sich das Minimum befindet und entsprechend werden die Variablen geupdated in den $Update$ angepasst. Das geschieht in mehren Iterationen, sodass man entsprechend Gradients sich einem (lokalen) Minimum annähert.
+![Verhaltenssicht: Datenfluss im TensorFlow Graph [@Graph2018]](./img/tensors_flowing.gif) 
+
+Der Graph stellt ein Neuronales Netzwerk mit zwei Layern dar, welches Classification macht und über Statistic Gradient Descent trainiert wird. Die Trainingsdaten werden im $Input$ Placeholder eingegeben und in Labels und die Feature Matrix aufgeteilt. Die Feature Matrix hält die Eingabedaten für den Forwardpasses durch das Neuronale Netz genutzt. In vektorisierter Form lässt sich die Multiplikation jedes Features mit dem entsprechenden Gewicht für alle Samples als Matrixmultiplikation ausdrücken. Der erste Layer nutzt ReLu als *activation function*, deren Ausgabe Matrix die Eingabe für den zweiten Layer ist.
+Für das Training werden die Labels als One-Hot-Vektor kodiert ($Class\space Labels$) und über die $Cross\space Entropie$ Cost-Function mit der Ausgabe des letzten Layers Netzes verglichen. Aus Performacegründen ist die Softmax Funktion im $Cross\space Entropie$ Node enthalten. Der Trainingsprozess minimiert die Cost-Fuction für die Trainingsdaten, indem mit Hilfe von Gradient Descent die Variablen  $W$ und $b$ in kleinen Schritten angepasst werden. Anhand der partiellen Ableitungen (Gradients) nach den Variablen ergibt sich die Richtung in der sich das Minimum für das jeweilige Sampe befindet und entsprechend werden die Variablen geupdated in den $Update$ angepasst. Das geschieht in mehren Iterationen.
 Bei Inference wird die Ausgabe des letzten Layers durch die Softmax-Funktion in den Interval [0,1] gebracht, was der Wahrscheinlichkeit entspricht, mit der das Netz ein Sample einer Klasse zuordnet. Das Netz nutzt dazu die in der Session gespeicherten trainierten *Weights* und *Biases*. Der Gleiche Graph kann auch in unterschiedlichen Session für unterschiedliche Daten trainiert werden.
 
  
@@ -129,19 +129,17 @@ Tensorflow ist in mehren Schichten organisiert. Diese reichen von einer Geräte-
 
 Diese Schichtenarchitektur erlaubt ein hohes Maß and Flexibilität und Portabilität. So kann auf dem Device Layer beispielsweise Unterstützung für Acceleratoren wie GPUs und TPUs hinzugefügt werden, Kernelimplementationen hinzugefügt oder ersetzt werden und eine zusätztliche Schnittstelle für eine andere Sprache hinzugefügt werden.
 
-High-Level Python Bibliotheken erlauben das schnelle prototyping und Training von Modellen und Algorithmen. Die C++ und Java Clients dagegen untersützt das einbinden trainierter Modelle in Produktivsysteme, auf welchen hohe Inference Performance gefordert ist.
+High-Level Python Bibliotheken erlauben das schnelle Prototyping und Training von Modellen und Algorithmen. Die C++ und Java Clients dagegen untersützt das Einbinden trainierter Modelle in Produktivsysteme, auf welchen hohe Inference Performance gefordert ist.
 
-Der Distribution master ist dafür verantwortlich die Berechnungen auf mehre Dataflow Executer aufzuteilen. Dabei werden transparent *Send* und *Recive* Nodes an den Kanten eingefügt, an denen der Graph partitioniert wird. Die Dataflow Executer können dabei auf mehre Maschienen verteilt werden, die passende Kommunikation wird vom Network Layer abstrahiert.
+Der Distribution Master ist dafür verantwortlich die Berechnungen auf mehre Dataflow Executer aufzuteilen. Dabei werden transparent *Send* und *Recive* Nodes an den Kanten eingefügt, an denen der Graph partitioniert wird. Die Dataflow Executer können dabei auf mehrere Maschienen verteilt werden, die passende Kommunikation wird vom Network Layer abstrahiert.
 
 
 
-![Struktursicht: Schichtenarchitektur von TensorFlow](./img/StructureLayers.png)
-
-[@TensorFlowArchitecture2018]
+![Struktursicht: Schichtenarchitektur von TensorFlow [@TensorFlowArchitecture2018]](./img/StructureLayers.png)
 
 #### Kernels
 
-- Kernels sind C++ Implementierungen von Operationen, die speziell für die Ausführung auf einer bestimmten Recheneinheit wie CPU oder GPU entwickelt wurden. Da sie zu nativiem Maschinencode kompiliert werden und sehr Hardware nah geschrieben sind, können sie diese optimal ausnutzten und sehr hohe Performance erzielen.  
+- Kernels sind C++ Implementierungen von Operationen, die speziell für die Ausführung auf einer bestimmten Recheneinheit wie CPU oder GPU entwickelt wurden. Da sie zu nativem Maschinencode kompiliert werden und sehr hardwarenah geschrieben sind, können sie diese optimal ausnutzten und sehr hohe Performance erzielen.  
 - Die TensorFlow enthält mehrere solche eingebaute Operationen/Kernels. Beispiele dafür sind: 
 
 | Kategorie                               | Beispiele                                            |
@@ -157,15 +155,13 @@ Der Distribution master ist dafür verantwortlich die Berechnungen auf mehre Dat
 
 : Kernel Implementierungen
 
-Außerdem untersützt TensorFlow das einbinden eigener Kernel.
+Außerdem untersützt TensorFlow das Einbinden eigener Kernel.
 
 ## Source-Code-Hierarchie
 
-Die Architektur lässt sich in den Verzeichnissen auf TensorFlow-GitHub wiedererkennen. Die Code-Hierarchie enthält folgende Verzeichnisse: 
+Die Architektur lässt sich in den Verzeichnissen auf TensorFlow-GitHub wiedererkennen. Die Code-Hierarchie enthält folgende Verzeichnisse [@GitHub2018]: 
 
 ![Source-Code-Hierarchie](./img/code_hierarchie.png){height=400px}
-
-[@GitHub2018]
 
 - cc: Funktions-Wrapper für den C++ Code.
 - core: Implementierung der Hauptfunktionalitäten von TensorFlow.
@@ -183,15 +179,15 @@ Die Architektur lässt sich in den Verzeichnissen auf TensorFlow-GitHub wiederer
 
 Die in TensorFlow erstellten Programme (Modelle) können sowohl lokal auf einem System, als auch verteilt auf mehreren Systemen ausgeführt werden. Der Master-Prozess kümmert sich um die Verteilung der Operationen zwischen den verfügbaren Ressourcen. 
 
-![Abbildungssicht: Single-Machine vs. verteilte Ausführung](./img/Deployment.png)
+![Abbildungssicht: Single-Machine vs. verteilte Ausführung [@LargeScale2012, S. 5]](./img/Deployment.png)
 
-[@LargeScale2012, S. 5]
+
 
 # Fazit
 
 Zusammenfassend lässt sich festhalten, dass sich die Anforderungen an das ML-Framework in der Architektur von TensorFlow wieder finden. Das Framework beitet die wesentlichen **Machine Learning Funktionalitäten** mit einer Spezialisierung für Deeplearning (breite Gradient Descent Unterstütztung). Die High-Level API erleichtert die Erstellung von Prototypen, während die Low-Level API die Möglichkeit bietet, flexibel zu bleiben und die Modelle anzupassen, um allen Anforderungen für produktiven Einsatz gerecht zu werden. 
 
-Der Device Layer sorgt für die notwendige Abstraktion von der Hardware für die **Portabilität**, damit Tensorflow mit verschiedenen Acceleratoren verwendet werden kann. Die die Datenfluss-basierte Funktionsweise sowie die Komponenten Distributed Master, Dataflow Executor und Worker Services bieten die Möglichkeiten, Graphen verteilt auszuführen. Dadurch ist auch die **Skalierbarkeit** gewährleistet. Die Persistierung von Checkpoints sorgt für eine schnelle **Recovery**, was besonders für längeres Trainng relevant ist. Die Harware-nahe Implementation die Funktionalitäten in C++ und die Kernel-Implementierungen sorgen zudem für eine schnelle **Performance**.
+Der Device Layer sorgt für die notwendige Abstraktion von der Hardware für die **Portabilität**, damit Tensorflow mit verschiedenen Acceleratoren verwendet werden kann. Die die Datenfluss-basierte Funktionsweise sowie die Komponenten Distributed Master, Dataflow Executor und Worker Services bieten die Möglichkeiten, Graphen verteilt auszuführen. Dadurch ist auch die **Skalierbarkeit** gewährleistet. Die Persistierung von Checkpoints sorgt für eine schnelle **Recovery**, was besonders für längeres Training relevant ist. Die harwarenahe Implementation die Funktionalitäten in C++ und die Kernel-Implementierungen sorgen zudem für eine schnelle **Performance**.
 
 # Literaturverzeichnis
 
