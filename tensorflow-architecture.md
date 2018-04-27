@@ -172,7 +172,7 @@ Die Architektur lässt sich in den Verzeichnissen auf TensorFlow-GitHub wiederer
 - go: Go API.
 - stream-executor: Interface für Hardware-Acceleratoren (z.B. GPUs).
 - tools: Entwicklungsumgebung für das Framework.
-- user_ops: Wrapper für die Benutzer-spezifischen (angepassten) Funktionen.
+- user_ops: Wrapper für die Benutzer-spezifischen (angepassten) Funktionen. [@DelftUniversity2017]
 
 
 ## Abblidungssicht (Ausführungseinheiten)
