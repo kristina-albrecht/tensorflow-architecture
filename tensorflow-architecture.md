@@ -12,8 +12,10 @@ titlepage-rule-color: FFFFFF
 titlepage-rule-height: 1
 toc-title: Inhaltsverzeichnis
 bibliography: TensorFlow.bib
-biblio-title: Literatur
+secnumdepth: 3
+# biblio-title: Literatur
 toc: true
+csl: iso690-numeric-en.csl
 lang: de-DE
 loftitle: "# Abbildungsverzeichnis"
 lotTitle: "# Tabellenverzeichnis"
@@ -60,6 +62,7 @@ Aus diesen Anwendungsfällen lassen sich die **Anforderungen** an die Bibliothek
 | ID   | Kurzbeschreibung           | Anforderung                                                  |
 | ---- | -------------------------- | ------------------------------------------------------------ |
 | F1   | ML und DL Funktionalitäten | Da Machine Learning auf mathematischen Berechnungen beruht, muss TensorFlow Vektor- bzw Matrizen-Operationen und andere Rechenoperationen aus Linearen Algebra und Statistik bereitstellen. Viele Trainingsalgorithmen benötigen Gradienten, deshalb muss TensorFlow diese selbst bestimmen können. |
+|      |                            |                                                              |
 | U1   | Protoyping                 | TensorFlow muss eine Möglichkeit zum schnellen Definieren und Testen von Modellen bereitstellen. |
 | U2   | Produktiver Einsatz        | TensorFlow muss für den produktiven Einsatz (vor allem Inference) geeignet sein. |
 | P1   | Performance                | Da Maschine Learning durch Rechenleistung limitiert ist, muss TensorFlow die verfügbaren Ressourcen effizent nutzen. |
@@ -81,6 +84,7 @@ Folgende organisatorische, technische und Produkt-bezogene Faktoren können eine
 | T2           | Die Rechenleistung einer Maschine ist begrenzt, weshalb horizontal skaliert werden muss |
 | T3           | Auf Clustern und im Produktiven Einsatz kommt vor allem Linux zum Einsatz, die User verwenden oft OS  X oder Windows. Es muss aber auch auf noch unbekannten Betriebsystem einsetzbar sein. |
 | P1           | Neue Bibliotheken können integriert werden                   |
+|              |                                                              |
 | P2           | Modell kann sehr komplex werden und viele Daten involvieren  |
 
 : Einflussfaktoren
@@ -189,3 +193,6 @@ Zusammenfassend lässt sich festhalten, dass sich die Anforderungen an das ML-Fr
 
 Der Device Layer sorgt für die notwendige Abstraktion von der Hardware für die **Portabilität**, damit Tensorflow mit verschiedenen Acceleratoren verwendet werden kann. Die die Datenfluss-basierte Funktionsweise sowie die Komponenten Distributed Master, Dataflow Executor und Worker Services bieten die Möglichkeiten, Graphen verteilt auszuführen. Dadurch ist auch die **Skalierbarkeit** gewährleistet. Die Persistierung von Checkpoints sorgt für eine schnelle **Recovery**, was besonders für längeres Trainng relevant ist. Die Harware-nahe Implementation die Funktionalitäten in C++ und die Kernel-Implementierungen sorgen zudem für eine schnelle **Performance**.
 
+# Literaturverzeichnis
+
+<div id="refs"></div>
